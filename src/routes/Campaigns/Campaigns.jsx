@@ -3,21 +3,25 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import TopMenu from "../../components/TopMenu"
 import {LinkContainer} from 'react-router-bootstrap'
+import { Navigate, useNavigate } from "react-router-dom";
 import React, { useState } from 'react';
 import axios from 'axios';
 import createCampaignImage from '../../imgs/create_campaign_card_image.png';
 
 export default function Campaigns(){
 
-    const [uniqueCampaignId, setUniqueCampaignId] = useState(-1);
+    let navigate = useNavigate();
 
-    function getNewCampaignId(){
-        axios.get('/generateAvailableCampaignId')
+    function requestNewId(){
+        
+        axios.get('http://localhost:3000/generateAvailableCampaignId')
             .then(function (response) {
-            // handle success
-            console.log(response);
-            return 8675309;
+            navigate(`${response.data.uniqueId}/campaign-config`);
         })
+    }
+
+    function goToCampaignConfigGenerator(configId){
+
     }
 
     return(
@@ -31,9 +35,9 @@ export default function Campaigns(){
                         <Card.Text>
                             Click here to start a new campaign!
                         </Card.Text>
-                        <LinkContainer to={{pathname: getNewCampaignId()}}>
-                            <Button variant="primary">Get Started</Button>
-                        </LinkContainer>
+                        {/* <LinkContainer to={"${uniqueCampaignId}/campaign-config"}> */}
+                            <Button variant="primary" onClick={() => requestNewId()}>Get Started</Button>
+                        {/* </LinkContainer> */}
                         
                     </Card.Body>
                 </Card>

@@ -22,7 +22,7 @@ root.render(
         <Route exact path="/" element={ <App />} />
         <Route exact path="demo" element={ <Demo />} />
         <Route exact path="campaigns" element={<Campaigns />} />
-        <Route exact path="campaigns/create" element={<CampaignConfigGenerator />} />
+        <Route exact path="campaigns/:campaignId/campaign-config" element={<CampaignConfigGenerator/> } />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

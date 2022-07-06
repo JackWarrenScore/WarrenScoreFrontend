@@ -4,9 +4,12 @@ import ToggleButtons from '../../components/ToggleButtons';
 import Button from 'react-bootstrap/Button';
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useParams } from "react-router-dom";
 import {LinkContainer} from 'react-router-bootstrap'
 
 export default function CampaignConfigGenerator(){
+
+    const { campaignId } = useParams();
 
     const rolePresetData = [
         {'name': 'Custom', 'value':'1', 'variant': "secondary", 'variantOutline': "outline-secondary", 
