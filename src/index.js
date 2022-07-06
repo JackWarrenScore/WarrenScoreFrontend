@@ -11,8 +11,8 @@ import {
 } from 'react-router-dom';
 
 import Demo from "./routes/Demo";
-import Campaigns from "./routes/Campaigns";
-import CampaignGenerator from './routes/CampaignGenerator';
+import Campaigns from "./routes/Campaigns/Campaigns";
+import CampaignConfigGenerator from './routes/Campaigns/CampaignConfigGenerator';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -22,7 +22,7 @@ root.render(
         <Route exact path="/" element={ <App />} />
         <Route exact path="demo" element={ <Demo />} />
         <Route exact path="campaigns" element={<Campaigns />} />
-        <Route exact path="campaigns/create" element={<CampaignGenerator />} />
+        <Route exact path="campaigns/create" element={<CampaignConfigGenerator />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

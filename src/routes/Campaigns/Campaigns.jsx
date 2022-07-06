@@ -1,12 +1,25 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import TopMenu from "../components/TopMenu"
+import TopMenu from "../../components/TopMenu"
 import {LinkContainer} from 'react-router-bootstrap'
-
-import createCampaignImage from '../imgs/create_campaign_card_image.png';
+import React, { useState } from 'react';
+import axios from 'axios';
+import createCampaignImage from '../../imgs/create_campaign_card_image.png';
 
 export default function Campaigns(){
+
+    const [uniqueCampaignId, setUniqueCampaignId] = useState(-1);
+
+    function getNewCampaignId(){
+        axios.get('/generateAvailableCampaignId')
+            .then(function (response) {
+            // handle success
+            console.log(response);
+            return 8675309;
+        })
+    }
+
     return(
         <div>
             <TopMenu />
@@ -18,7 +31,7 @@ export default function Campaigns(){
                         <Card.Text>
                             Click here to start a new campaign!
                         </Card.Text>
-                        <LinkContainer to="create">
+                        <LinkContainer to={{pathname: getNewCampaignId()}}>
                             <Button variant="primary">Get Started</Button>
                         </LinkContainer>
                         

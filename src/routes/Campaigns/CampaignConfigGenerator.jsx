@@ -1,12 +1,12 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import TopMenu from "../components/TopMenu"
-import ToggleButtons from '../components/ToggleButtons';
+import TopMenu from "../../components/TopMenu"
+import ToggleButtons from '../../components/ToggleButtons';
 import Button from 'react-bootstrap/Button';
 import React, { useState } from 'react';
 import axios from 'axios';
-import Constants from '../Constants';
+import {LinkContainer} from 'react-router-bootstrap'
 
-export default function CampaignGenerator(){
+export default function CampaignConfigGenerator(){
 
     const rolePresetData = [
         {'name': 'Custom', 'value':'1', 'variant': "secondary", 'variantOutline': "outline-secondary", 
@@ -72,13 +72,18 @@ export default function CampaignGenerator(){
         UNDEFINED_MODIFIER:0
     });
 
-    function testConnection() {
-        axios.post('http://localhost:3000/campaigns/create')
-        .then(response => console.log(response));
-    }
-
-    function showMeTheState() {
-        console.log(campaignInfo);
+    //TODO: Add actual data to be sent.
+    function saveAndContinue() {
+        axios.post('/campaigns/create', {
+            dataA: 'A',
+            dataB: 'B',
+            dataC: 'C',
+            dataD: 'D',
+            dataE: 'e'
+          })
+          .then(function (response) {
+            console.log(response);
+          })
     }
 
     function updateState(keyForNewValue, newValue){
@@ -100,7 +105,9 @@ export default function CampaignGenerator(){
             <br/>
 
 
-            <Button variant="primary" onClick={() => showMeTheState()}>Save And Continue</Button>
+            <LinkContainer to="mailingList/create">
+                <Button variant="primary" onClick={() => saveAndContinue()}>Save And Continue</Button>
+            </LinkContainer>
         </div>
     )
 }
