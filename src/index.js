@@ -13,6 +13,7 @@ import {
 import Demo from "./routes/Demo";
 import Campaigns from "./routes/Campaigns/Campaigns";
 import CampaignConfigGenerator from './routes/Campaigns/CampaignConfigGenerator';
+import CampaignMailingList from './routes/Campaigns/CampaignMailingList';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -23,6 +24,7 @@ root.render(
         <Route exact path="demo" element={ <Demo />} />
         <Route exact path="campaigns" element={<Campaigns />} />
         <Route exact path="campaigns/:campaignId/campaign-config" element={<CampaignConfigGenerator/> } />
+        <Route exact path="campaigns/:campaignId/campaign-mailing-list" element={<CampaignMailingList/> } />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -1,95 +1,70 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
+import Button from 'react-bootstrap/Button';
+
 import TopMenu from "../../components/TopMenu"
 import ToggleButtons from '../../components/ToggleButtons';
-import Button from 'react-bootstrap/Button';
 import React, { useState } from 'react';
-import axios from 'axios';
-import { useParams } from "react-router-dom";
-import {LinkContainer} from 'react-router-bootstrap'
+import { useParams, useNavigate } from "react-router-dom";
+import RangeSlider from 'react-bootstrap-range-slider';
+import PlusMinusButton from '../../components/PlusMinusButton';
 
 export default function CampaignConfigGenerator(){
 
-    const { campaignId } = useParams();
+    function generateConfigPreset(shapeMaxSize, plusModifier, timesModifier, powerModifier, undefinedModifier){
+        return {
+            SHAPE_MAX: shapeMaxSize,
+            "+": plusModifier,
+            "*": timesModifier,
+            "^": powerModifier,
+            "u": undefinedModifier
+        }
+    }
 
     const rolePresetData = [
-        {'name': 'Custom', 'value':'1', 'variant': "secondary", 'variantOutline': "outline-secondary", 
-            dataToBeModified: {
-                ALLOW_SHAPES: false, 
-                SHAPE_MAX: 0,
-                PLUS_MODIFIER:0,
-                TIMES_MODIFIER:0,
-                POWER_MODIFIER:0,
-                UNDEFINED_MODIFIER:0
-            }    
+        {
+            'name': 'Custom', 'value':'1', 'variant': "secondary", 'variantOutline': "outline-secondary", 
+            'dataToBeModified': generateConfigPreset(1, 0, 0, 0, 0)    
         },
-        {'name': 'Manager', 'value':'2', 'variant': "success", 'variantOutline': "outline-success",
-            dataToBeModified: {
-                ALLOW_SHAPES: false, 
-                SHAPE_MAX: 0,
-                PLUS_MODIFIER:1,
-                TIMES_MODIFIER:1,
-                POWER_MODIFIER:0,
-                UNDEFINED_MODIFIER:2
-            }
+        {
+            'name': 'Manager', 'value':'2', 'variant': "success", 'variantOutline': "outline-success",
+            'dataToBeModified': generateConfigPreset(1, 1, 1, 0, 2)
         },
-        {'name': 'Analyst', 'value':'3', 'variant': "warning", 'variantOutline': "outline-warning",
-            dataToBeModified: {
-                ALLOW_SHAPES: false, 
-                SHAPE_MAX: 0,
-                PLUS_MODIFIER:1,
-                TIMES_MODIFIER:2,
-                POWER_MODIFIER:0,
-                UNDEFINED_MODIFIER:0
-            }
+        {
+            'name': 'Analyst', 'value':'3', 'variant': "warning", 'variantOutline': "outline-warning",
+            'dataToBeModified': generateConfigPreset(1, 1, 2, 0, 0)
         },
-        {'name': 'Developer', 'value':'4', 'variant': "danger", 'variantOutline': "outline-danger",
-            dataToBeModified: {
-                ALLOW_SHAPES: true, 
-                SHAPE_MAX: 3,
-                PLUS_MODIFIER:0,
-                TIMES_MODIFIER:1,
-                POWER_MODIFIER:2,
-                UNDEFINED_MODIFIER:1
-            }
+        {
+            'name': 'Developer', 'value':'4', 'variant': "danger", 'variantOutline': "outline-danger",
+            'dataToBeModified': generateConfigPreset(3, 0, 1, 2, 1)
         },
-        {'name': 'Architect', 'value':'5', 'variant': "info", 'variantOutline': "outline-info",
-            dataToBeModified: {
-                ALLOW_SHAPES: true, 
-                SHAPE_MAX: 5,
-                PLUS_MODIFIER:1,
-                TIMES_MODIFIER:2,
-                POWER_MODIFIER:3,
-                UNDEFINED_MODIFIER:0
-            }
+        {
+            'name': 'Architect', 'value':'5', 'variant': "info", 'variantOutline': "outline-info",
+            'dataToBeModified': generateConfigPreset(5, 1, 2, 3, 0)
         }
     ]
+
+    const { campaignId } = useParams();
+    let navigate = useNavigate();
 
     const [campaignInfo, setCampaignInfo] = useState({
         TITLE:"A pretty sick title.",
         DESCRIPTION:"A really rad description",
-        ALLOW_SHAPES:false,
-        SHAPE_MAX:0,
-        PLUS_MODIFIER:0,
-        TIMES_MODIFIER:0,
-        POWER_MODIFIER:0,
-        UNDEFINED_MODIFIER:0
+        SHAPE_MAX:1,
+        "+":0,
+        "*":0,
+        "^":0,
+        "u":0
     });
 
-    //TODO: Add actual data to be sent.
+    //TODO: Send data to backend
     function saveAndContinue() {
-        axios.post('/campaigns/create', {
-            dataA: 'A',
-            dataB: 'B',
-            dataC: 'C',
-            dataD: 'D',
-            dataE: 'e'
-          })
-          .then(function (response) {
-            console.log(response);
-          })
+        console.log(campaignInfo)
+        navigate(`../campaigns/${campaignId}/campaign-mailing-list`)
     }
 
-    function updateState(keyForNewValue, newValue){
+    function updateKeyByValue(keyForNewValue, newValue){
         let campaignInfoCopy = JSON.parse(JSON.stringify(campaignInfo));
         campaignInfoCopy[keyForNewValue] = newValue;
         setCampaignInfo(campaignInfoCopy);
@@ -101,16 +76,33 @@ export default function CampaignConfigGenerator(){
             <h1 className="text-center">Customize your campaign</h1>
             <div className="text-center">
                 <input type="text" style={{"maxWidth":"50%"}} className="form-control" placeholder={campaignInfo.TITLE} 
-                    onChange={(e) => updateState("TITLE", e.target.value)}></input>
+                    onChange={(e) => updateKeyByValue("TITLE", e.target.value)}></input>
                 <br/>
                 <ToggleButtons currentState={campaignInfo} updateState={setCampaignInfo} controls={rolePresetData}/>
             </div>
             <br/>
 
+                <div style={{width: 25 + '%'}}>
+                    {"Max Shape Size: "}
+                    <RangeSlider
+                        min={1}
+                        max={7}
+                        value={campaignInfo.SHAPE_MAX}
+                        onChange={e => updateKeyByValue("SHAPE_MAX", e.target.value)}
+                        tooltipLabel={currentValue => `${currentValue}`}
+                        tooltip='on'
+                    />
+                </div>
 
-            <LinkContainer to="mailingList/create">
+                <div>
+                    <PlusMinusButton state={campaignInfo} update={updateKeyByValue} keyName={"+"}/>
+                    <PlusMinusButton state={campaignInfo} update={updateKeyByValue} keyName={"*"}/>
+                    <PlusMinusButton state={campaignInfo} update={updateKeyByValue} keyName={"^"}/>
+                    <PlusMinusButton state={campaignInfo} update={updateKeyByValue} keyName={"u"}/>
+                </div>
+
+
                 <Button variant="primary" onClick={() => saveAndContinue()}>Save And Continue</Button>
-            </LinkContainer>
         </div>
     )
 }
