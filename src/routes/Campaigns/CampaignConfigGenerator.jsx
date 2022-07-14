@@ -32,9 +32,8 @@ export default function CampaignConfigGenerator(){
 
     //TODO: Send data to backend
     function saveAndContinue() {
-        axios.post('http://localhost:3000/upsertCampaignConfig', {
-            campaignInfo
-        })
+        axios.post('http://localhost:3000/upsertCampaignConfig', campaignInfo
+        )
         .then(function (response){
             console.log(response);
             navigate(`../campaigns/${campaignId}/campaign-mailing-list`)
