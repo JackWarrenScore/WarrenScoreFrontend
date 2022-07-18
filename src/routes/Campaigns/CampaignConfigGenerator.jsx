@@ -32,7 +32,11 @@ export default function CampaignConfigGenerator(){
 
     //TODO: Send data to backend
     function saveAndContinue() {
-        axios.post('http://localhost:3000/upsertCampaignConfig', campaignInfo
+        axios.post('http://localhost:3000/upsertCampaignConfig', 
+            {
+                "campaignId": campaignId,
+                "configData": campaignInfo
+            }
         )
         .then(function (response){
             console.log(response);
