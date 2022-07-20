@@ -8,7 +8,7 @@ import TopMenu from '../../components/TopMenu';
 
 import axios from 'axios';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function CampaignMailingList(){
     
@@ -18,28 +18,7 @@ export default function CampaignMailingList(){
     const { campaignId } = useParams();
     let navigate = useNavigate();
 
-    function addToMailingList(element){
-        if(element !== ""){
-            let mailingListCopy = new Set(mailingList);
-            mailingListCopy.add(element)
-            console.log(mailingListCopy, email)
-            setMailingList(mailingListCopy);
-            setEmail("")
-        }
-    }
-
-    function saveAndNavigateToCampaigns(){
-        axios.post('http://localhost:3000/upsertCampaignMailingList', 
-            {
-                campaignId: campaignId,
-                campaignRecipients: [...mailingList]
-            }
-        )
-        .then(function (response){
-            console.log(response);
-            navigate(`../campaigns`)
-        })
-    }
+    useEffect(() => loadSpecificMailingList(), []);
 
     let emailsAsAList = <ListGroup> {[...mailingList].map((item, i) => <ListGroup.Item key={`${item}-element`}>{item}</ListGroup.Item>)} </ListGroup>
     
@@ -65,4 +44,41 @@ export default function CampaignMailingList(){
             
         </div>
     );
+
+    function addToMailingList(element){
+        if(element !== ""){
+            let mailingListCopy = new Set(mailingList);
+            mailingListCopy.add(element)
+            console.log(mailingListCopy, email)
+            setMailingList(mailingListCopy);
+            setEmail("")
+        }
+    }
+
+    function loadSpecificMailingList(){
+        axios.post('http://localhost:3000/getMailingList', {campaignId: campaignId})
+            .then(function (response){
+                console.log(response);
+                if(response.data !== []){
+                    let retrievedMailingList = new Set();
+                    for(const index in response.data){
+                        retrievedMailingList.add(response.data[index].email)
+                    }
+                    setMailingList(retrievedMailingList)
+                }
+            })
+    }
+
+    function saveAndNavigateToCampaigns(){
+        axios.post('http://localhost:3000/upsertCampaignMailingList', 
+            {
+                campaignId: campaignId,
+                campaignRecipients: [...mailingList]
+            }
+        )
+        .then(function (response){
+            console.log(response);
+            navigate(`../campaigns`)
+        })
+    }
 }

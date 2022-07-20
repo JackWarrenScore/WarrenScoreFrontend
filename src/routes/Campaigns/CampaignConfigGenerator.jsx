@@ -8,7 +8,7 @@ import TopMenu from "../../components/TopMenu"
 import PlusMinusButton from '../../components/PlusMinusButton';
 import ToggleButtons from '../../components/ToggleButtons';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 
 import axios from 'axios';
@@ -17,39 +17,6 @@ export default function CampaignConfigGenerator(){
 
     const { campaignId } = useParams();
     let navigate = useNavigate();
-
-    function generateConfigPreset(shapeMaxSize, plusModifier, timesModifier, powerModifier, undefinedModifier, radiusMax, scoreType){
-        return {
-            SHAPE_MAX: shapeMaxSize,
-            "+": plusModifier,
-            "*": timesModifier,
-            "^": powerModifier,
-            "u": undefinedModifier,
-            "RADIUS_MAX": radiusMax,
-            "SCORE_TYPE": scoreType
-        }
-    }
-
-    //TODO: Send data to backend
-    function saveAndContinue() {
-        axios.post('http://localhost:3000/upsertCampaignConfig', 
-            {
-                "campaignId": campaignId,
-                "configData": campaignInfo
-            }
-        )
-        .then(function (response){
-            console.log(response);
-            navigate(`../campaigns/${campaignId}/campaign-mailing-list`)
-        })
-    }
-
-    function updateKeyByValue(keyForNewValue, newValue){
-        let campaignInfoCopy = JSON.parse(JSON.stringify(campaignInfo));
-        campaignInfoCopy[keyForNewValue] = newValue;
-        console.log(campaignInfoCopy);
-        setCampaignInfo(campaignInfoCopy);
-    }
 
     const rolePresetData = [
         {
@@ -87,6 +54,8 @@ export default function CampaignConfigGenerator(){
         "RADIUS_MAX":1,
         "SCORE_TYPE":"MAX"
     });
+
+    useEffect(() => loadSpecificConfig(), []);
 
     return (
         <div>
@@ -141,4 +110,60 @@ export default function CampaignConfigGenerator(){
                 <Button variant="primary" onClick={() => saveAndContinue()}>Save And Continue</Button>
         </div>
     )
+
+    function loadSpecificConfig() {
+        axios.post('http://localhost:3000/getConfig', { campaignId: campaignId })
+            .then(function(response) {
+                console.log(response)
+                const data = response.data;
+
+                if(data !== ''){
+                    setCampaignInfo({
+                        TITLE: data.title,
+                        DESCRIPTION: data.description,
+                        SHAPE_MAX: data.shape_max_size,
+                        "+": data.plus_modifier_amount,
+                        "*": data.times_modifier_amount,
+                        "^": data.power_modifier_amount,
+                        "u": data.undefined_modifier_amount,
+                        "RADIUS_MAX": data.radius_maximum,
+                        "SCORE_TYPE":data.score_type
+                    })
+                }
+            })
+    }
+
+    function generateConfigPreset(shapeMaxSize, plusModifier, timesModifier, powerModifier, undefinedModifier, radiusMax, scoreType){
+        return {
+            TITLE: 'A thouroghly challenging template',
+            DESCRIPTION: 'Very interesting description',
+            SHAPE_MAX: shapeMaxSize,
+            "+": plusModifier,
+            "*": timesModifier,
+            "^": powerModifier,
+            "u": undefinedModifier,
+            "RADIUS_MAX": radiusMax,
+            "SCORE_TYPE": scoreType
+        }
+    }
+
+    function saveAndContinue() {
+        axios.post('http://localhost:3000/upsertCampaignConfig', 
+            {
+                "campaignId": campaignId,
+                "configData": campaignInfo
+            }
+        )
+        .then(function (response){
+            console.log(response);
+            navigate(`../campaigns/${campaignId}/campaign-mailing-list`)
+        })
+    }
+
+    function updateKeyByValue(keyForNewValue, newValue){
+        let campaignInfoCopy = JSON.parse(JSON.stringify(campaignInfo));
+        campaignInfoCopy[keyForNewValue] = newValue;
+        console.log(campaignInfoCopy);
+        setCampaignInfo(campaignInfoCopy);
+    }
 }
