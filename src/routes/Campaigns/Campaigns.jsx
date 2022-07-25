@@ -61,7 +61,7 @@ export default function Campaigns(){
     )
 
     function requestNewId(){
-        axios.get('http://localhost:3000/generateAvailableCampaignId')
+        axios.get('http://localhost:3000/generate-available-campaign-id')
             .then(function (response) {
             navigate(`${response.data.uniqueId}/campaign-config`);
         })
@@ -72,7 +72,7 @@ export default function Campaigns(){
     }
 
     function getCampaigns(){
-        axios.get('http://localhost:3000/getAllCampaigns')
+        axios.get('http://localhost:3000/get-all-campaigns')
             .then(function (response) {
                 console.log(response.data);
                 setCampaigns(response.data);

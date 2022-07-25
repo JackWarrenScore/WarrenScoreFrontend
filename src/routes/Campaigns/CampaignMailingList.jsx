@@ -56,7 +56,7 @@ export default function CampaignMailingList(){
     }
 
     function loadSpecificMailingList(){
-        axios.post('http://localhost:3000/getMailingList', {campaignId: campaignId})
+        axios.post('http://localhost:3000/get-mailing-list', {campaignId: campaignId})
             .then(function (response){
                 console.log(response);
                 if(response.data !== []){
@@ -70,7 +70,7 @@ export default function CampaignMailingList(){
     }
 
     function saveAndNavigateToCampaigns(){
-        axios.post('http://localhost:3000/upsertCampaignMailingList', 
+        axios.post('http://localhost:3000/upsert-campaign-mailing-list', 
             {
                 campaignId: campaignId,
                 campaignRecipients: [...mailingList]

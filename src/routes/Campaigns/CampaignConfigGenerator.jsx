@@ -112,7 +112,7 @@ export default function CampaignConfigGenerator(){
     )
 
     function loadSpecificConfig() {
-        axios.post('http://localhost:3000/getConfig', { campaignId: campaignId })
+        axios.post('http://localhost:3000/get-config', { campaignId: campaignId })
             .then(function(response) {
                 console.log(response)
                 const data = response.data;
@@ -148,7 +148,7 @@ export default function CampaignConfigGenerator(){
     }
 
     function saveAndContinue() {
-        axios.post('http://localhost:3000/upsertCampaignConfig', 
+        axios.post('http://localhost:3000/upsert-campaign-config', 
             {
                 "campaignId": campaignId,
                 "configData": campaignInfo
