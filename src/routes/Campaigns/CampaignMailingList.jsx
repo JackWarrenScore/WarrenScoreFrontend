@@ -69,6 +69,8 @@ export default function CampaignMailingList(){
             })
     }
 
+    //TODO: Probably not the best flow to be generating the aptitest in the mailing list.
+    //Reimplement to make more sense down the line.
     function saveAndNavigateToCampaigns(){
         axios.post('http://localhost:3000/upsert-campaign-mailing-list', 
             {
@@ -78,7 +80,11 @@ export default function CampaignMailingList(){
         )
         .then(function (response){
             console.log(response);
-            navigate(`../campaigns`)
+
+            axios.post('http://localhost:3000/upsert-aptitest-key', {campaignId: campaignId})
+            .then(function (response){
+                navigate(`../campaigns`)
+            })
         })
     }
 }

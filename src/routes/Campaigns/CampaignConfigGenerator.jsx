@@ -42,10 +42,12 @@ export default function CampaignConfigGenerator(){
     ]
 
 
+    //TODO: Reimplement Test Length
 
     const [campaignInfo, setCampaignInfo] = useState({
         TITLE:"A pretty sick title.",
         DESCRIPTION:"A really rad description",
+        TEST_LENGTH: 7,
         SHAPE_MAX:1,
         "+":0,
         "*":0,

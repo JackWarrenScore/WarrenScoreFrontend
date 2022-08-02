@@ -15,6 +15,7 @@ export default function Demo(){
         axios.post('http://localhost:3000/get-demo-test', {})
         .then(function (response){
             console.log(response);
+            setTestData(response.data);
         })
     }
 
@@ -23,7 +24,7 @@ export default function Demo(){
     return(
         <div>
             <h1>Demo page!</h1>        
-            <WarrenScoreCanvas />
+            <WarrenScoreCanvas shapes={testData}/>
         </div>
     )
 }
