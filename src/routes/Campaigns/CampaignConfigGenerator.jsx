@@ -21,23 +21,23 @@ export default function CampaignConfigGenerator(){
     const rolePresetData = [
         {
             'name': 'Custom', 'value':'1', 'variant': "secondary", 'variantOutline': "outline-secondary", 
-            'dataToBeModified': generateConfigPreset(1, 0, 0, 0, 0, 5, "MAX")
+            'dataToBeModified': generateConfigPreset(1, 1, 0, 0, 0, 0, 5, "MAX")
         },
         {
             'name': 'Manager', 'value':'2', 'variant': "success", 'variantOutline': "outline-success",
-            'dataToBeModified': generateConfigPreset(1, 1, 1, 0, 2, 3, "MAX")
+            'dataToBeModified': generateConfigPreset(1, 3, 1, 1, 0, 2, 3, "MAX")
         },
         {
             'name': 'Analyst', 'value':'3', 'variant': "warning", 'variantOutline': "outline-warning",
-            'dataToBeModified': generateConfigPreset(1, 1, 2, 0, 0, 5, "MAX")
+            'dataToBeModified': generateConfigPreset(1, 5, 1, 2, 0, 0, 5, "MAX")
         },
         {
             'name': 'Developer', 'value':'4', 'variant': "danger", 'variantOutline': "outline-danger",
-            'dataToBeModified': generateConfigPreset(3, 0, 1, 2, 1, 5, "MAX")
+            'dataToBeModified': generateConfigPreset(3, 5, 0, 1, 2, 1, 5, "MAX")
         },
         {
             'name': 'Architect', 'value':'5', 'variant': "info", 'variantOutline': "outline-info",
-            'dataToBeModified': generateConfigPreset(5, 1, 2, 3, 0, 10, "MIN")
+            'dataToBeModified': generateConfigPreset(5, 7, 1, 2, 3, 0, 10, "MIN")
         }
     ]
 
@@ -47,7 +47,7 @@ export default function CampaignConfigGenerator(){
     const [campaignInfo, setCampaignInfo] = useState({
         TITLE:"A pretty sick title.",
         DESCRIPTION:"A really rad description",
-        TEST_LENGTH: 7,
+        TEST_LENGTH: 0,
         SHAPE_MAX:1,
         "+":0,
         "*":0,
@@ -72,6 +72,9 @@ export default function CampaignConfigGenerator(){
             <br/>
 
                 <div style={{width: 25 + '%'}}>
+
+                    <PlusMinusButton state={campaignInfo} update={updateKeyByValue} keyName={"TEST_LENGTH"}/>
+
                     {"Max Shape Size: "}
                     <RangeSlider
                         min={1}
@@ -123,6 +126,7 @@ export default function CampaignConfigGenerator(){
                     setCampaignInfo({
                         TITLE: data.title,
                         DESCRIPTION: data.description,
+                        TEST_LENGTH: data.test_length,
                         SHAPE_MAX: data.shape_max_size,
                         "+": data.plus_modifier_amount,
                         "*": data.times_modifier_amount,
@@ -135,10 +139,11 @@ export default function CampaignConfigGenerator(){
             })
     }
 
-    function generateConfigPreset(shapeMaxSize, plusModifier, timesModifier, powerModifier, undefinedModifier, radiusMax, scoreType){
+    function generateConfigPreset(shapeMaxSize, testLength, plusModifier, timesModifier, powerModifier, undefinedModifier, radiusMax, scoreType){
         return {
             TITLE: 'A thouroghly challenging template',
             DESCRIPTION: 'Very interesting description',
+            TEST_LENGTH: testLength,
             SHAPE_MAX: shapeMaxSize,
             "+": plusModifier,
             "*": timesModifier,
