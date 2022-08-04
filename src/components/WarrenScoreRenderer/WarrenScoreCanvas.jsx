@@ -10,10 +10,9 @@ let y = 50;
 
 export default function WarrenScoreCanvas(props){
 
-    //TODO: Do I even need to do this? lol.
     let shapes = [];
     for(const index in props.shapes){
-        shapes.push(props.shapes[index]);
+        shapes.push(new ShapeRepr(props.shapes[index]));
     }
 
     //TODO: Maybe build in a dynamic renderer for the grid... Render items in the current scope... etc

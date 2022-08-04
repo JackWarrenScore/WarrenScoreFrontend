@@ -7,6 +7,8 @@ class TileRepr {
         this.rightEffect = tileData.rightEffect;
     }
 
+    setColor(color){ this.color = color; }
+
     getValue(){ return this.value; }
     getUpEffect(){ return this.upEffect; }
     getLeftEffect(){ return this.leftEffect; }
