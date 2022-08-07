@@ -12,6 +12,7 @@ export default function WarrenScoreCanvas(props){
 
     let shapes = [];
     for(const index in props.shapes){
+        console.log(props.shapes[index]);
         shapes.push(new ShapeRepr(props.shapes[index]));
     }
 
