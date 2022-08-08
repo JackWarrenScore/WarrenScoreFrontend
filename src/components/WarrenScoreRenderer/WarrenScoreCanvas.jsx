@@ -21,14 +21,19 @@ export default function WarrenScoreCanvas(props){
     const setup = (p5, canvasParentRef) => {
 		// use parent to render the canvas in this ref
 		// (without that p5 will render the canvas outside of your component)
-		p5.createCanvas(p5.windowWidth - 50, p5.windowHeight - 150).parent(canvasParentRef);
+		let canvas = p5.createCanvas(p5.windowWidth - 50, p5.windowHeight - 150).parent(canvasParentRef);
 	};
 
 	const draw = (p5) => {
 		p5.background(255);
-        renderScore(p5);
         renderGrid(p5);
-		p5.ellipse(x, y, 70, 70);
+
+        shapes.forEach((shape) => {
+            shape.renderShape(p5, 100);
+        })
+
+        // renderShape(p5, shape)
+        renderScore(p5);
 		// NOTE: Do not use setState in the draw function or in functions that are executed
 		// in the draw function...
 		// please use normal variables or class properties for these purposes
@@ -42,9 +47,9 @@ export default function WarrenScoreCanvas(props){
     )
 
     function renderScore(p5){
+        p5.fill(0, 0, 0);
         p5.textSize(32);
         p5.text('Score: 0', 10, 30);
-        p5.fill(0, 0, 0);
     }
 
     function renderGrid(p5){
