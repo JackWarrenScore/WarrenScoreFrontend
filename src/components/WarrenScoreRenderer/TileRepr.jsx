@@ -3,10 +3,10 @@ export default class TileRepr {
         this.x = tileData.x;
         this.y = tileData.y;
         this.value = tileData.value;
-        this.upEffect = tileData.up_modifier;
-        this.leftEffect = tileData.left_modifier;
-        this.downEffect = tileData.down_modifier;
-        this.rightEffect = tileData.right_modifier;
+        this.upEffect = this.tempFix(tileData.up_modifier);
+        this.leftEffect = this.tempFix(tileData.left_modifier);
+        this.downEffect = this.tempFix(tileData.down_modifier);
+        this.rightEffect = this.tempFix(tileData.right_modifier);
 
         this.X_MIDDLE_PADDING = (45/100)
         this.X_LEFT_PADDING = (10/100)
@@ -15,6 +15,14 @@ export default class TileRepr {
         this.Y_MIDDLE_PADDING = (55/100)
         this.Y_UP_PADDING = (20/100)
         this.Y_DOWN_PADDING = (90/100)
+    }
+
+    tempFix(string){
+        if(string === "u") { return ""; }
+        if(string === "*") { return "x"; }
+        else{
+            return string;
+        }
     }
 
     setColor(color){ this.color = color; }
