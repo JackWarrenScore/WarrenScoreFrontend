@@ -4,80 +4,63 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import ShapeRepr from './ShapeRepr';
+import PanAndZoom from './PanAndZoom';
 
-let circles = [];
+let panAndZoom;
+let outsideP5;
 
-const controls = {
-    view: {x: 0, y: 0, zoom: 1},
-    viewPos: { prevX: null,  prevY: null,  isDragging: false },
+let TILE_SIZE = 100;
+function cleanPosition(value){
+    return Math.floor(value/TILE_SIZE);
 }
+
 
 export default function WarrenScoreCanvas(props){
 
     let canvas;
 
-    class Circle {
-        constructor(p5){
-            this.p5 = p5;
-            this.x = p5.random(-500, p5.width + 500);
-            this.y = p5.random(-500, p5.height + 500);
-        }
-
-        renderCircle(p5){
-            p5.fill(55);
-            p5.noStroke();
-            p5.ellipse(this.x, this.y, 50, 50);
-        }
+    let shapes = [];
+    for(const index in props.shapes){
+        shapes.push(new ShapeRepr(props.shapes[index]));
     }
 
-      function worldZoom(e, p5) {
-        const {x, y, deltaY} = e;
-        const direction = deltaY > 0 ? -1 : 1;
-        console.log(direction, deltaY)
-        const factor = 0.05;
-        const zoom = 1 * direction * factor;
-      
-        const wx = (x-controls.view.x)/(p5.width*controls.view.zoom);
-        const wy = (y-controls.view.y)/(p5.height*controls.view.zoom);
-      
-        controls.view.x -= wx*p5.width*zoom;
-        controls.view.y -= wy*p5.height*zoom;
-        controls.view.zoom += zoom;
-
-        console.log(controls.view.zoom)
-      }
-
-    
-
-    // let shapes = [];
-    // for(const index in props.shapes){
-    //     shapes.push(new ShapeRepr(props.shapes[index]));
-    // }
-
     const setup = (p5, canvasParentRef) => {
-        console.log("SETUP");
+        // outsideP5 = p5;
+        panAndZoom = new PanAndZoom(p5);
 		canvas = p5.createCanvas(p5.windowWidth - 50, p5.windowHeight - 150).parent(canvasParentRef);
-        canvas.mouseWheel(e => worldZoom(e, p5))
-        for(let i = 0; i < 50; i++){
-            circles.push(new Circle(p5))
-        }
+        canvas.mouseWheel(e => panAndZoom.worldZoom(e));
+
+
+        canvas.mousePressed(() => {
+            panAndZoom.mousePressed(p5.mouseX, p5.mouseY);
+        })
+
+        canvas.mouseMoved(() => {
+            panAndZoom.mouseDragged(p5.mouseX, p5.mouseY);
+        })
+
+        canvas.mouseReleased(() => {
+            panAndZoom.mouseReleased();
+        })
+
 	};
+
+    // console.log(outsideP5);
+    // outsideP5.window.mousePressed(e => panAndZoom.mousePressed(e));
 
 
 	const draw = (p5) => {
 		p5.background(255);
-        p5.scale(controls.view.zoom)
-        circles.forEach(circle => {
-            circle.renderCircle(p5)
-        });
+        panAndZoom.scale();
+        panAndZoom.translate();
 
         renderGrid(p5);
         renderScore(p5);
         
 
-        // shapes.forEach((shape) => {
-        //     shape.renderShape(p5, 100);
-        // })
+        shapes.forEach((shape) => {
+            shape.renderShape(p5, 100);
+        })
 
 	};
 
@@ -96,12 +79,19 @@ export default function WarrenScoreCanvas(props){
     function renderGrid(p5){
         p5.fill(255, 255, 255);
 
-        for(let x = 0; x < 1000; x+= 100){
-            p5.line(x, 0, x, 1000);
+        const LEFT_X = -5000;
+        const RIGHT_X = 5000;
+        const UPPER_Y = -5000;
+        const LOWER_Y = 5000;
+
+
+
+        for(let x = LEFT_X; x < RIGHT_X; x += 100){
+            p5.line(x, UPPER_Y, x, LOWER_Y);
         }
 
-        for(let y = 0; y < 1000; y += 100){
-            p5.line(0, y, 1000, y);
+        for(let y = UPPER_Y; y < LOWER_Y; y += 100){
+            p5.line(LEFT_X, y, RIGHT_X, y);
         }
     }
 }
