@@ -33,24 +33,28 @@ export default class TileRepr {
     getDownEffect(){ return this.downEffect; }
     getRightEffect(){ return this.rightEffect; }
 
-    renderTile(p5, length, absoluteX, absoluteY){
-        
-        const stupidXConst = 5;
-        const stupidYConst = 2;
+    renderTile(p5, width, absoluteX, absoluteY){
 
-        const tilesAbsoluteX = (absoluteX + this.x + stupidXConst)*length
-        const tilesAbsoluteY = (absoluteY + this.y + stupidYConst)*length
+        const tilesAbsoluteX = (absoluteX + this.x)*width
+        const tilesAbsoluteY = (absoluteY + this.y)*width
 
         p5.fill(p5.color(this.color))
-        p5.square(tilesAbsoluteX, tilesAbsoluteY, length);
+        // console.log(`(${tilesAbsoluteX}, ${tilesAbsoluteY})`)
+        p5.square(tilesAbsoluteX, tilesAbsoluteY, width);
         
         p5.fill(p5.color(0, 0, 0))
         p5.textSize(20);
-        p5.text(this.getValue(), tilesAbsoluteX+length*this.X_MIDDLE_PADDING, tilesAbsoluteY+length*this.Y_MIDDLE_PADDING)
+        p5.text(this.getValue(), tilesAbsoluteX+width*this.X_MIDDLE_PADDING, tilesAbsoluteY+width*this.Y_MIDDLE_PADDING)
 
-        p5.text(this.getUpEffect(), tilesAbsoluteX+length*this.X_MIDDLE_PADDING, tilesAbsoluteY+length*this.Y_UP_PADDING)
-        p5.text(this.getLeftEffect(), tilesAbsoluteX+length*this.X_LEFT_PADDING, tilesAbsoluteY+length*this.Y_MIDDLE_PADDING)
-        p5.text(this.getDownEffect(), tilesAbsoluteX+length*this.X_MIDDLE_PADDING, tilesAbsoluteY+length*this.Y_DOWN_PADDING)
-        p5.text(this.getRightEffect(), tilesAbsoluteX+length*this.X_RIGHT_PADDING, tilesAbsoluteY+length*this.Y_MIDDLE_PADDING)
+        p5.text(this.getUpEffect(), tilesAbsoluteX+width*this.X_MIDDLE_PADDING, tilesAbsoluteY+width*this.Y_UP_PADDING)
+        p5.text(this.getLeftEffect(), tilesAbsoluteX+width*this.X_LEFT_PADDING, tilesAbsoluteY+width*this.Y_MIDDLE_PADDING)
+        p5.text(this.getDownEffect(), tilesAbsoluteX+width*this.X_MIDDLE_PADDING, tilesAbsoluteY+width*this.Y_DOWN_PADDING)
+        p5.text(this.getRightEffect(), tilesAbsoluteX+width*this.X_RIGHT_PADDING, tilesAbsoluteY+width*this.Y_MIDDLE_PADDING)
+
+        // console.log(`(${tilesAbsoluteX}, ${tilesAbsoluteY})`);
+    }
+
+    getPositionAsString(absoluteX, absoluteY){
+        return `(${absoluteX + this.x}, ${absoluteY + this.y})`;
     }
   }

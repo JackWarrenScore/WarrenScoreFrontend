@@ -18,9 +18,12 @@ export default class ShapeRepr {
 
     renderShape(p5, length){
         p5.fill(100, 100, 100);
-        // console.log(`${this.absoluteX}, ${this.absoluteY}`)
         this.tiles.forEach((tile) => {
             tile.renderTile(p5, length, this.absoluteX, this.absoluteY);
         })
+    }
+
+    getTiles(){
+        return this.tiles;
     }
 }
