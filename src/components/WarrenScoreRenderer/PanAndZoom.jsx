@@ -8,6 +8,7 @@ export default class TileRepr {
             view: {x: 0, y: 0, zoom: 1},
             viewPos: { prevX: null,  prevY: null,  isDragging: false },
         }
+
     }
 
     scale(){
@@ -41,7 +42,6 @@ export default class TileRepr {
     }
 
     mousePressed(x, y) {
-        console.log("Mouse Pressed!");
         this.controls.viewPos.isDragging = true;
         this.controls.viewPos.prevX = x;
         this.controls.viewPos.prevY = y;
@@ -51,7 +51,6 @@ export default class TileRepr {
         const {prevX, prevY, isDragging} = this.controls.viewPos;
         if(!isDragging) return;
 
-        console.log("Mouse is being dragged!");
         const pos = {x: x, y: y};
         const dx = pos.x - prevX;
         const dy = pos.y - prevY;
@@ -65,7 +64,6 @@ export default class TileRepr {
     }
 
     mouseReleased() {
-        console.log("Mouse Released!");
         this.controls.viewPos.isDragging = false;
         this.controls.viewPos.prevX = null;
         this.controls.viewPos.prevY = null;

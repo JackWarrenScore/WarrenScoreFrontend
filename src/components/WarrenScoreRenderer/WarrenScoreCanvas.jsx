@@ -16,8 +16,37 @@ let mouse;
 let pointToTile = {};
 
 let TILE_SIZE = 100;
-function convertCanvasPositionToGridPosition(x, y){
-    return `(${Math.floor(x)}, ${Math.floor(y)})`;
+function convertCanvasPositionToGridPositionWithPan(p5, controls){
+    const canvasX = p5.mouseX;
+    const canvasY = p5.mouseY;
+
+    const controlsX = controls.view.x;
+    const controlsY = controls.view.y;
+    
+    const gridX = Math.floor((canvasX-controlsX)/TILE_SIZE);
+    const gridY = Math.floor((canvasY-controlsY)/TILE_SIZE);
+
+    console.log(`Pan says: (${gridX}, ${gridY})`);
+    
+    return (gridX, gridY);
+}
+
+function convertCanvasPositionToGridPositionWithZoom(p5, controls, e){
+    const {x, y, deltaY} = e;
+    const direction = deltaY > 0 ? -1 : 1;
+    const factor = 0.05;
+    const zoom = 1 * direction * factor;
+  
+    const wx = (p5.mouseX-controls.view.x)/(p5.width*controls.view.zoom);
+    const wy = (p5.mouseY-controls.view.y)/(p5.height*controls.view.zoom);
+  
+    const gridX = Math.floor((controls.view.y - wy*p5.height*zoom)/TILE_SIZE);
+    const gridY = Math.floor((controls.view.x - wx*p5.width*zoom)/TILE_SIZE);
+    const newZoom = controls.view.zoom + zoom;
+    
+    console.log(`Zoom says: (${Math.floor(gridX)}, ${Math.floor(gridY)})`);
+
+    return (gridX, gridY);
 }
 
 
@@ -40,13 +69,13 @@ export default function WarrenScoreCanvas(props){
 		canvas = p5.createCanvas(p5.windowWidth - 50, p5.windowHeight - 150).parent(canvasParentRef);
         canvas.mouseWheel(e => {            
             panAndZoom.worldZoom(e)
+            const gridPosition = convertCanvasPositionToGridPositionWithZoom(p5, panAndZoom.controls, e);
         });
 
         canvas.mousePressed(() => {
-            const gridPosition = convertCanvasPositionToGridPosition(panAndZoom.controls.view.x / p5.mouseX,  panAndZoom.controls.view.x / p5.mouseY);
             panAndZoom.mousePressed(p5.mouseX, p5.mouseY);
-            //TODO: This is working correctly. Move forward with this impl
-            console.log(`The mouse grid position is: (${Math.floor((p5.mouseX-panAndZoom.controls.view.x)/100)}, ${Math.floor((p5.mouseY-panAndZoom.controls.view.y)/100)})`)
+            const gridPosition = convertCanvasPositionToGridPositionWithPan(p5, panAndZoom.controls)
+            // console.log(`Zooming: (${p5,mouseX- panAndZoom.controls.view.x}, ${})`);
         })
 
         canvas.mouseMoved(() => {
