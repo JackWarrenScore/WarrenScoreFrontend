@@ -1,12 +1,12 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link, Outlet} from "react-router-dom";
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
-import {LinkContainer} from 'react-router-bootstrap'
+import {LinkContainer} from 'react-router-bootstrap';
+import '../styles/themeColors.css';
 
 export default function TopMenu(){
     return(
         <div>
-                <Navbar bg="light" expand="lg">
+                <Navbar className="primary" expand="lg">
                 <Container>
                     <LinkContainer to="/">
                         <Navbar.Brand> Warren Score </Navbar.Brand>
@@ -16,7 +16,7 @@ export default function TopMenu(){
                     <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
                         <LinkContainer to="/">
-                            <Nav.Link>Home</Nav.Link>
+                            <Nav.Link variant="danger">Home</Nav.Link>
                         </LinkContainer>
                         <LinkContainer to="/demo">
                             <Nav.Link>Demo</Nav.Link>

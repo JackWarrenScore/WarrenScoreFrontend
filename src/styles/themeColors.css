@@ -1,0 +1,28 @@
+.primary {
+    background-color: #FFD97D;
+    color: #02020B;
+}
+
+.secondary {
+    background-color: #60D394;
+    color: #02020B;
+}
+
+.accent {
+    background-color: #AB4E68;
+    color: #02020B;
+}
+
+.btn-accent {
+    background-color: #AB4E68;
+    color: #02020B;
+}
+
+.container {
+    display: flex;
+    gap: 10px;
+    gap: 10px 20px; /* row-gap column gap */
+    row-gap: 10px;
+    column-gap: 20px;
+    flex-wrap: wrap;
+}
