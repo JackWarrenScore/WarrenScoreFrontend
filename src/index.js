@@ -11,7 +11,7 @@ import {
 
 import Demo from "./routes/Demo";
 import Campaigns from "./routes/Campaigns/Campaigns";
-import CampaignConfigGenerator from './routes/Campaigns/CampaignConfigGenerator';
+import CampaignConfigGenerator from './routes/Campaigns/CampaignConfigGenerator/CampaignConfigGenerator';
 import CampaignMailingList from './routes/Campaigns/CampaignMailingList';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

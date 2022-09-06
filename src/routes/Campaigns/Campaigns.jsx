@@ -39,20 +39,20 @@ export default function Campaigns(){
     return(
         <div>
 
-<style type="text/css">
-        {`
-            .btn-create {
-                background-color: #FF784F;
-                color: #02020B;
-            }
+            <style type="text/css">
+                {`
+                    .btn-create {
+                        background-color: #FF784F;
+                        color: #02020B;
+                    }
 
-            .btn-modify {
-                background-color: #0496FF;
-                color: #02020B;
-            }
-        `}
+                    .btn-modify {
+                        background-color: #0496FF;
+                        color: #02020B;
+                    }
+                `}
 
-      </style>
+            </style>
 
             <TopMenu />
             <br/>

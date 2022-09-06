@@ -4,9 +4,6 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import WarrenScoreCanvas from "../components/WarrenScoreRenderer/WarrenScoreCanvas";
 
-let x = 50;
-let y = 50;
-
 export default function Demo(){
 
     const [testData, setTestData] = useState([]);
@@ -23,6 +20,7 @@ export default function Demo(){
 
     return(
         <div>
+            <TopMenu/>
             <h1>Demo page!</h1>        
             <WarrenScoreCanvas shapes={testData}/>
         </div>
