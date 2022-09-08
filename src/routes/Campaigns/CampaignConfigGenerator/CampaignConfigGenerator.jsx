@@ -4,12 +4,13 @@ import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import axios from 'axios';
+import '../../../styles/themeColors.css';
 
 import TopMenu from '../../../components/TopMenu';
 import PresetMenu from './PresetMenu';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-
+import ConfigCard from './ConfigCard';
 
 
 
@@ -95,8 +96,28 @@ export default function CampaignConfigGenerator(){
                 </Form.Group>
             </Form>
             <br/>
-            <h3>Suggested Presets</h3>
-            <PresetMenu update={updateKeyByValue}/>
+            <div style={{'textAlign': 'center'}}>
+                <h3>Suggested Presets</h3>
+                <PresetMenu state={campaignInfo} setState={setCampaignInfo}/>                
+            </div>
+            
+            <br/>
+
+            <div className="container">
+                <ConfigCard state={campaignInfo} updateState={updateKeyByValue} stateKey={'test_length'} 
+                    title={'Test Length'} min={3} max={10}/>
+                <ConfigCard state={campaignInfo} updateState={updateKeyByValue} stateKey={'shape_max_size'} 
+                    title={'Maximum Shape Size'} min={1} max={10}/>
+                <ConfigCard state={campaignInfo} updateState={updateKeyByValue} stateKey={'undefined_modifier_amount'} 
+                    title={'Undefined Modifier Ratio'} min={0} max={20}/>
+                <ConfigCard state={campaignInfo} updateState={updateKeyByValue} stateKey={'plus_modifier_amount'} 
+                    title={'Plus Modifier Ratio'} min={0} max={20}/>
+                <ConfigCard state={campaignInfo} updateState={updateKeyByValue} stateKey={'times_modifier_amount'} 
+                    title={'Times Modifier Ratio'} min={0} max={20}/>
+                <ConfigCard state={campaignInfo} updateState={updateKeyByValue} stateKey={'power_modifier_amount'} 
+                title={'Power Modifier Ratio'} min={0} max={20}/>
+            </div>
+            <Button onClick={() => console.log(campaignInfo)}>Print State</Button>
 
         </>
     )
