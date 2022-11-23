@@ -2,59 +2,61 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 
-import React, { useState, useEffect } from 'react';
 import Sketch from "react-p5";
 
 import ShapeRepr from './ShapeRepr';
-import PanAndZoom from './PanAndZoom';
-import MouseRepr from './MouseRepr';
+import Point from './Point';
 
-let panAndZoom;
+import * as CanvasConstants from './CanvasConstants.jsx';
+
 let canvas;
-let mouse;
 
+let viewScale = 1;
+let viewX = 0;
+let viewY = 0;
+
+let dragStatus = CanvasConstants.DEFAULT;
+
+//We instantiate these outside the function so that they're accessible to the inner functions
+let shapes = [];
 let pointToTile = {};
+let identityToShape = {};
 
-let TILE_SIZE = 100;
-function convertCanvasPositionToGridPositionWithPan(p5, controls){
-    const canvasX = p5.mouseX;
-    const canvasY = p5.mouseY;
+let clickedTile = null;
+let clickedShapeOriginalX = 0.0;
+let clickedShapeOriginalY = 0.0;
+let mouseXPosAtClick = 0.0;
+let mouseYPosAtClick = 0.0;
+let xDifference = 0.0;
+let yDifference = 0.0;
 
-    const controlsX = controls.view.x;
-    const controlsY = controls.view.y;
-    
-    const gridX = Math.floor((canvasX-controlsX)/TILE_SIZE);
-    const gridY = Math.floor((canvasY-controlsY)/TILE_SIZE);
-
-    console.log(`Pan says: (${gridX}, ${gridY})`);
-    
-    return (gridX, gridY);
-}
-
-function convertCanvasPositionToGridPositionWithZoom(p5, controls, e){
-    const {x, y, deltaY} = e;
+function effectZoom(event) {
+    const {x, y, deltaY} = event;
     const direction = deltaY > 0 ? -1 : 1;
-    const factor = 0.05;
-    const zoom = 1 * direction * factor;
-  
-    const wx = (p5.mouseX-controls.view.x)/(p5.width*controls.view.zoom);
-    const wy = (p5.mouseY-controls.view.y)/(p5.height*controls.view.zoom);
-  
-    const gridX = Math.floor((controls.view.y - wy*p5.height*zoom)/TILE_SIZE);
-    const gridY = Math.floor((controls.view.x - wx*p5.width*zoom)/TILE_SIZE);
-    const newZoom = controls.view.zoom + zoom;
-    
-    console.log(`Zoom says: (${Math.floor(gridX)}, ${Math.floor(gridY)})`);
-
-    return (gridX, gridY);
+    if(direction === 1) { viewScale += 0.2; }
+    if(direction === -1 && viewScale > 0.5) { viewScale -= 0.2; }
 }
 
+function effectPan(p5){
+    let tx = (p5.pmouseX - p5.mouseX) / viewScale;
+    let ty = (p5.pmouseY - p5.mouseY) / viewScale;
+    viewX += tx;
+    viewY += ty;
+}
 
 export default function WarrenScoreCanvas(props){
 
-    let shapes = [];
+    shapes = [];
+    pointToTile = {};
+
+    console.log("~~~~~~~~~~~~~~~~~~~~~HARD RESET~~~~~~~~~~~~~~~~~~~~~");
+
     for(const index in props.shapes){
-        const shape = new ShapeRepr(props.shapes[index]);
+        //This is a dogcrap way to instantiate your shapes. Just add your tiles manually like any other God fearing christian
+        const identity = `${index}`
+        const shape = new ShapeRepr(props.shapes[index], identity);
+
+        identityToShape[identity] = shape;
         shape.getTiles().forEach((tile) => {
             const tilePosition = tile.getPositionAsString(shape.absoluteX, shape.absoluteY);
             pointToTile[tilePosition] = tile;
@@ -62,43 +64,66 @@ export default function WarrenScoreCanvas(props){
         shapes.push(shape);
     }
 
-
     const setup = (p5, canvasParentRef) => {
-        panAndZoom = new PanAndZoom(p5);
-        mouse = new MouseRepr(p5);
-		canvas = p5.createCanvas(p5.windowWidth - 50, p5.windowHeight - 150).parent(canvasParentRef);
-        canvas.mouseWheel(e => {            
-            panAndZoom.worldZoom(e)
-            const gridPosition = convertCanvasPositionToGridPositionWithZoom(p5, panAndZoom.controls, e);
-        });
+		canvas = p5.createCanvas(p5.windowWidth - 30, p5.windowHeight - 130).parent(canvasParentRef);
+        canvas.mouseWheel(e => effectZoom(e))
+        p5.background(255);
 
         canvas.mousePressed(() => {
-            panAndZoom.mousePressed(p5.mouseX, p5.mouseY);
-            const gridPosition = convertCanvasPositionToGridPositionWithPan(p5, panAndZoom.controls)
-            // console.log(`Zooming: (${p5,mouseX- panAndZoom.controls.view.x}, ${})`);
+
+            let x = parseInt((p5.mouseX/viewScale + viewX)/CanvasConstants.TILE_WIDTH)*100;
+            let y = parseInt((p5.mouseY/viewScale + viewY)/CanvasConstants.TILE_WIDTH)*100;
+            let mouseLocation = new Point(x,y);
+
+            if(mouseLocation.toString() in pointToTile){
+                clickedTile = pointToTile[mouseLocation.toString()];
+
+                //Intuitively, it doesn't make sense that we would need to scale this. I think this is good as is.
+                xDifference = p5.mouseX - clickedTile.getParentRef().absoluteX;
+                yDifference = p5.mouseY - clickedTile.getParentRef().absoluteY;
+
+                dragStatus = CanvasConstants.DRAGGING_PIECE                
+            }
+            else {
+                dragStatus = CanvasConstants.DRAGGING_WORLD;
+            }
         })
 
         canvas.mouseMoved(() => {
-            panAndZoom.mouseDragged(p5.mouseX, p5.mouseY);
-            // mouse.moveMouse(p5.mouseX, p5.mouseY, panAndZoom.controls.view.x, panAndZoom.controls.view.y);
+            if(dragStatus === CanvasConstants.DRAGGING_WORLD) {
+                effectPan(p5);
+            }
+            if(dragStatus === CanvasConstants.DRAGGING_PIECE) {
+                console.log("Dragging.")
+                const selectedShape = identityToShape[clickedTile.getParentRef().getId()];
+
+                //TODO: This is the ratfink code that needs to change.
+                const dragLocaleX = (p5.mouseX - xDifference);
+                const dragLocaleY = (p5.mouseY - yDifference);
+
+                selectedShape.absoluteX = dragLocaleX
+                selectedShape.absoluteY = dragLocaleY
+            }
         })
 
         canvas.mouseReleased(() => {
-            panAndZoom.mouseReleased();
+            // clickedTile = pointToTile[mouseLocation.toString()];
+            // clickedTileOriginalPosition = clickedTile.getPositionAsString()
+
+            dragStatus = CanvasConstants.DEFAULT;
         })
 
 	};
 
 	const draw = (p5) => {
-		p5.background(240);
+		p5.background(255);
         renderScore(p5);
 
-        panAndZoom.scale();
-        panAndZoom.translate();
+        p5.scale(viewScale);
+        p5.translate(-viewX, -viewY);
 
         renderGrid(p5);
         renderShapes(p5);
-        renderMouse();
 	};
 
     return(
@@ -109,7 +134,7 @@ export default function WarrenScoreCanvas(props){
 
     function renderShapes(p5){
         shapes.forEach((shape) => {
-            shape.renderShape(p5, TILE_SIZE);
+            shape.renderShape(p5, CanvasConstants.TILE_WIDTH);
         })
     }
 
@@ -120,20 +145,15 @@ export default function WarrenScoreCanvas(props){
     }
 
     function renderGrid(p5){
-        p5.fill(255, 255, 255);
 
-        const SCALE = 100;
-
-        for(let x = -5; x <= 5; x += 1){
-            p5.line(x*SCALE, -5*SCALE, x*SCALE, 5*SCALE);
+        p5.fill('black')
+        for(let x = 0; x < p5.windowWidth; x+=CanvasConstants.TILE_WIDTH){
+          for(let y = 0; y < p5.windowHeight; y+=CanvasConstants.TILE_WIDTH){
+            p5.line(0, y, p5.windowWidth, y)
+            p5.textSize(15)
+            p5.text(`(${x/CanvasConstants.TILE_WIDTH}, ${y/CanvasConstants.TILE_WIDTH})`, x+40, y+40);
+          }
+          p5.line(x, 0, x, p5.windowHeight)
         }
-
-        for(let y = -5; y <= 5; y += 1){
-            p5.line(-5*SCALE, y*SCALE, 5*SCALE, y*SCALE);
-        }
-    }
-
-    function renderMouse(){
-        mouse.renderMouse();
     }
 }

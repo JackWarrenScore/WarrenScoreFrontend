@@ -1,5 +1,4 @@
 import TopMenu from "../components/TopMenu"
-import Sketch from "react-p5";
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import WarrenScoreCanvas from "../components/WarrenScoreRenderer/WarrenScoreCanvas";
@@ -11,11 +10,11 @@ export default function Demo(){
     function getAptitudeTest() {
         axios.post('http://localhost:3000/get-demo-test', {})
         .then(function (response){
-            console.log(response);
             setTestData(response.data);
         })
+        
     }
-
+    
     useEffect(() => getAptitudeTest(), []);
 
     return(

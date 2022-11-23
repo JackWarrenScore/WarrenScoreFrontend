@@ -1,7 +1,12 @@
+import * as CanvasConstants from './CanvasConstants.jsx';
+
 export default class TileRepr {
-    constructor(tileData) {
-        this.x = tileData.x;
-        this.y = tileData.y;
+    constructor(tileData, shapeRef) {
+
+        this.shapeRef = shapeRef;
+
+        this.x = tileData.x*CanvasConstants.TILE_WIDTH;
+        this.y = tileData.y*CanvasConstants.TILE_WIDTH;
         this.value = tileData.value;
         this.upEffect = this.tempFix(tileData.up_modifier);
         this.leftEffect = this.tempFix(tileData.left_modifier);
@@ -32,29 +37,27 @@ export default class TileRepr {
     getLeftEffect(){ return this.leftEffect; }
     getDownEffect(){ return this.downEffect; }
     getRightEffect(){ return this.rightEffect; }
+    getParentRef() { return this.shapeRef; }
 
-    renderTile(p5, width, absoluteX, absoluteY){
+    renderTile(p5, absoluteX, absoluteY){
 
-        const tilesAbsoluteX = (absoluteX + this.x)*width
-        const tilesAbsoluteY = (absoluteY + this.y)*width
+        const tilesAbsoluteX = (absoluteX + this.x)
+        const tilesAbsoluteY = (absoluteY + this.y)
 
         p5.fill(p5.color(this.color))
-        // console.log(`(${tilesAbsoluteX}, ${tilesAbsoluteY})`)
-        p5.square(tilesAbsoluteX, tilesAbsoluteY, width);
+        p5.square(tilesAbsoluteX, tilesAbsoluteY, CanvasConstants.TILE_WIDTH);
         
         p5.fill(p5.color(0, 0, 0))
         p5.textSize(20);
-        p5.text(this.getValue(), tilesAbsoluteX+width*this.X_MIDDLE_PADDING, tilesAbsoluteY+width*this.Y_MIDDLE_PADDING)
+        p5.text(this.getValue(), tilesAbsoluteX+CanvasConstants.TILE_WIDTH*this.X_MIDDLE_PADDING, tilesAbsoluteY+CanvasConstants.TILE_WIDTH*this.Y_MIDDLE_PADDING)
 
-        p5.text(this.getUpEffect(), tilesAbsoluteX+width*this.X_MIDDLE_PADDING, tilesAbsoluteY+width*this.Y_UP_PADDING)
-        p5.text(this.getLeftEffect(), tilesAbsoluteX+width*this.X_LEFT_PADDING, tilesAbsoluteY+width*this.Y_MIDDLE_PADDING)
-        p5.text(this.getDownEffect(), tilesAbsoluteX+width*this.X_MIDDLE_PADDING, tilesAbsoluteY+width*this.Y_DOWN_PADDING)
-        p5.text(this.getRightEffect(), tilesAbsoluteX+width*this.X_RIGHT_PADDING, tilesAbsoluteY+width*this.Y_MIDDLE_PADDING)
-
-        // console.log(`(${tilesAbsoluteX}, ${tilesAbsoluteY})`);
+        p5.text(this.getUpEffect(), tilesAbsoluteX+CanvasConstants.TILE_WIDTH*this.X_MIDDLE_PADDING, tilesAbsoluteY+CanvasConstants.TILE_WIDTH*this.Y_UP_PADDING)
+        p5.text(this.getLeftEffect(), tilesAbsoluteX+CanvasConstants.TILE_WIDTH*this.X_LEFT_PADDING, tilesAbsoluteY+CanvasConstants.TILE_WIDTH*this.Y_MIDDLE_PADDING)
+        p5.text(this.getDownEffect(), tilesAbsoluteX+CanvasConstants.TILE_WIDTH*this.X_MIDDLE_PADDING, tilesAbsoluteY+CanvasConstants.TILE_WIDTH*this.Y_DOWN_PADDING)
+        p5.text(this.getRightEffect(), tilesAbsoluteX+CanvasConstants.TILE_WIDTH*this.X_RIGHT_PADDING, tilesAbsoluteY+CanvasConstants.TILE_WIDTH*this.Y_MIDDLE_PADDING)
     }
-
-    getPositionAsString(absoluteX, absoluteY){
-        return `(${absoluteX + this.x}, ${absoluteY + this.y})`;
+    
+    getPositionAsString(){
+        return `(${this.shapeRef.absoluteX + this.x}, ${this.shapeRef.absoluteY + this.y})`;
     }
   }
