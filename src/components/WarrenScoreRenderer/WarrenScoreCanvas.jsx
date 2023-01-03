@@ -23,12 +23,8 @@ let pointToTile = {};
 let identityToShape = {};
 
 let clickedTile = null;
-let clickedShapeOriginalX = 0.0;
-let clickedShapeOriginalY = 0.0;
-let mouseXPosAtClick = 0.0;
-let mouseYPosAtClick = 0.0;
-let xDifference = 0.0;
-let yDifference = 0.0;
+let selectedShape = null;
+let selectedShapeOriginalPosition = new Point(-1, -1);
 
 function effectZoom(event) {
     const {x, y, deltaY} = event;
@@ -77,11 +73,7 @@ export default function WarrenScoreCanvas(props){
 
             if(mouseLocation.toString() in pointToTile){
                 clickedTile = pointToTile[mouseLocation.toString()];
-
-                //Intuitively, it doesn't make sense that we would need to scale this. I think this is good as is.
-                xDifference = p5.mouseX - clickedTile.getParentRef().absoluteX;
-                yDifference = p5.mouseY - clickedTile.getParentRef().absoluteY;
-
+                selectedShapeOriginalPosition = new Point(clickedTile.getParentRef().absoluteX, clickedTile.getParentRef().absoluteY)
                 dragStatus = CanvasConstants.DRAGGING_PIECE                
             }
             else {
@@ -95,21 +87,41 @@ export default function WarrenScoreCanvas(props){
             }
             if(dragStatus === CanvasConstants.DRAGGING_PIECE) {
                 console.log("Dragging.")
-                const selectedShape = identityToShape[clickedTile.getParentRef().getId()];
+                selectedShape = identityToShape[clickedTile.getParentRef().getId()];
 
-                //TODO: This is the ratfink code that needs to change.
-                const dragLocaleX = (p5.mouseX - xDifference);
-                const dragLocaleY = (p5.mouseY - yDifference);
+                let x = parseInt((p5.mouseX/viewScale + viewX)/CanvasConstants.TILE_WIDTH)*100;
+                let y = parseInt((p5.mouseY/viewScale + viewY)/CanvasConstants.TILE_WIDTH)*100;
 
-                selectedShape.absoluteX = dragLocaleX
-                selectedShape.absoluteY = dragLocaleY
+                selectedShape.absoluteX = x
+                selectedShape.absoluteY = y
             }
         })
 
         canvas.mouseReleased(() => {
-            // clickedTile = pointToTile[mouseLocation.toString()];
-            // clickedTileOriginalPosition = clickedTile.getPositionAsString()
-
+            let isAlreadyOccupied = false;
+            selectedShape.getTiles().forEach((tile) => {
+                const absoluteTilePosition = new Point(selectedShape.absoluteX + tile.x, selectedShape.absoluteY + tile.y);
+                if(absoluteTilePosition.toString() in pointToTile && selectedShape.getId() !== pointToTile[absoluteTilePosition.toString()].getParentRef().getId()){
+                    isAlreadyOccupied = true;
+                }
+            })
+            if(! isAlreadyOccupied) {
+                console.log("Dropping tile in a new location!")
+                //1. Remove those tiles from the points to tiles
+                selectedShape.getTiles().forEach((tile) => {
+                    const oldAbsolutePoint = new Point(selectedShapeOriginalPosition.getX() + tile.x, selectedShapeOriginalPosition.getY() + tile.y);
+                    delete pointToTile[oldAbsolutePoint.toString()];
+                })
+                //2. Add those tiles with the new points
+                selectedShape.getTiles().forEach((tile) => {
+                    const newAbsolutePoint = new Point(selectedShape.absoluteX + tile.x, selectedShape.absoluteY + tile.y);
+                    pointToTile[newAbsolutePoint.toString()] = tile;
+                })
+            } else {
+                console.log("Same old location!")
+                selectedShape.absoluteX = selectedShapeOriginalPosition.getX()
+                selectedShape.absoluteY = selectedShapeOriginalPosition.getY()
+            }
             dragStatus = CanvasConstants.DEFAULT;
         })
 

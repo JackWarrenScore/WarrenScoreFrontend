@@ -72,7 +72,6 @@ export default function CampaignConfigGenerator(){
     function updateKeyByValue(keyForNewValue, newValue){
         let campaignInfoCopy = JSON.parse(JSON.stringify(campaignInfo));
         campaignInfoCopy[keyForNewValue] = newValue;
-        console.log(campaignInfoCopy);
         setCampaignInfo(campaignInfoCopy);
     }
 
@@ -118,6 +117,7 @@ export default function CampaignConfigGenerator(){
                 title={'Power Modifier Ratio'} min={0} max={20}/>
             </div>
             <Button onClick={() => console.log(campaignInfo)}>Print State</Button>
+            <Button onClick={saveAndContinue}>Save</Button>
 
         </>
     )

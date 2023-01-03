@@ -1,6 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import TopMenu from "../components/TopMenu"
 
 export default function Home(){
+
+    const navigate = useNavigate();
+
     return(
         <div>
             <TopMenu />
@@ -11,6 +15,7 @@ export default function Home(){
                 <h3>Incredibly important sounding poppycock here.</h3>
                 <h3>Oh Warren Score is so important.</h3>
                 <h3>**More self aggrandizing statements**</h3>
+                     
             </div>
         </div>
     )

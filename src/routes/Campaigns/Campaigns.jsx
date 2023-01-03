@@ -4,6 +4,8 @@ import Button from 'react-bootstrap/Button';
 import TopMenu from "../../components/TopMenu"
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 import axios from 'axios';
 import createCampaignImage from '../../imgs/create_campaign_card_image.png';
 import savedCampaignImage from '../../imgs/saved_campaign_card_image.png';
@@ -14,9 +16,24 @@ export default function Campaigns(){
     let navigate = useNavigate();
 
     const [campaigns, setCampaigns] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [uid, setUid] = useState("");
+
+    const auth = getAuth();
     
     //Using useEffect prevents state being updated by get requests infinitely.
-    useEffect(() =>getCampaigns(), []);
+    useEffect(() => {
+        auth.onAuthStateChanged((user) => {
+            if(user){
+                setUid(user.uid);
+                setIsLoggedIn(true);
+                getCampaigns()
+            } else {
+                setIsLoggedIn(false);
+            }
+        })
+    }
+    , [isLoggedIn]);
 
     let campaignsElement = campaigns.map((campaign, index) => 
         <Card style={{width: '18rem'}} key={`saved-card-${index}`}>
@@ -90,9 +107,10 @@ export default function Campaigns(){
         </div>
     )
 
-    function requestNewId(){
-        axios.get('http://localhost:3000/generate-available-campaign-id')
+    function requestNewId(){      
+        axios.get('http://localhost:3000/generate-available-campaign-id', { params: {"campaignOwner": uid }})
             .then(function (response) {
+            console.log(`We've requested a new id for ${uid}. It was: ${response.data.uniqueId}`)
             navigate(`${response.data.uniqueId}/campaign-config`);
         })
     }
@@ -102,9 +120,9 @@ export default function Campaigns(){
     }
 
     function getCampaigns(){
-        axios.get('http://localhost:3000/get-all-campaigns')
+        console.log("Getting all campaigns for: ", uid)  
+        axios.get('http://localhost:3000/get-all-campaigns', { params: {"campaignOwner": uid }})
             .then(function (response) {
-                console.log(response.data);
                 setCampaigns(response.data);
             })
     }
